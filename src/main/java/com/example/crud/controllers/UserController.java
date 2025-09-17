@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.crud.models.User;
 import com.example.crud.repositories.UserRepository;
+import com.example.crud.services.UserService;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,37 +25,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
     
 
     @GetMapping("/users")
     public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String id) {
-        if (id != null) {
-            return ResponseEntity.ok(userRepository.findById(id).get());
-        }
-        List<User> users = userRepository.findAll();
-        users = users.stream().map(u-> {
-            u.setName(u.getName().toUpperCase());
-            return u;
-        }).toList();
-        return ResponseEntity.ok(users);
+        return ResponseEntity.ok(userService.getAllUsers(id));
     }
 
     @PostMapping("/users")
     public ResponseEntity<?> createUser(@RequestBody User user) {
-        userRepository.save(user);
+        userService.createUser(user);
         return ResponseEntity.ok(user);
     }
 
     @PutMapping("/users")
     public ResponseEntity<?> updateUser(@RequestBody User user) {
-        userRepository.save(user);
+        userService.updateUser(user.getId(), user);
         return ResponseEntity.ok(user);
     }
 
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable String id) {
-        userRepository.deleteById(id);
+        userService.deleteUser(id);
         return ResponseEntity.ok("User deleted with id: " + id);
     }
 }
