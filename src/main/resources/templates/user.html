@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <fieldset>
+        <form onsubmit="createUser(event)">
+            <input type="text" name="name" placeholder="User Name" />
+            <input type="email" name="email" placeholder="User Email" />
+            <input type="submit" />
+        </form>
+    </fieldset>
+    <br />
+    <table border=1>
+        <thead>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Action</th>
+        </thead>
+        <tbody id="tbody">
+        </tbody>
+    </table>
+
+    <script>
+        function createUser(event) {
+            event.preventDefault();
+            const nameInput = event.target.name;
+            const emailInput = event.target.email;
+            const user = { name: nameInput.value, email: emailInput.value }
+
+            const myHeaders = new Headers();
+            myHeaders.append("Content-Type", "application/json");
+            const raw = JSON.stringify(user);
+
+            const requestOptions = {
+                method: "POST",
+                headers: myHeaders,
+                body: raw,
+                redirect: "follow"
+            };
+
+            fetch("http://127.0.0.1:9000/users", requestOptions)
+                .then((response) => response.text())
+                .then((result) => {
+                    getAllDataAndShow()
+                })
+                .catch((error) => console.error(error));
+        }
+
+        function deleteUser(id) {
+            const requestOptions = {
+                method: "DELETE",
+                redirect: "follow"
+            };
+            fetch(`http://127.0.0.1:9000/users/${id}`, requestOptions)
+                .then((response) => response.text())
+                .then((result) => {
+                    getAllDataAndShow();
+                })
+                .catch((error) => console.error(error));
+        }
+
+        function getAllDataAndShow() {
+            fetch("http://127.0.0.1:9000/users")
+                .then((response) => response.json())
+                .then((data) => {
+                    let rows = ``
+                    data.forEach(u => {
+                        rows = rows + `<tr>
+        				<td>${u.id}</td>        	
+            			<td>${u.name}</td>
+            			<td>${u.email}</td>
+            			<td>
+                			<button onclick="deleteUser(${u.id})">delete</button>
+            			</td>
+        			</tr>`
+                    })
+                    document.getElementById('tbody').innerHTML = rows;
+                })
+        }
+
+        getAllDataAndShow()
+    </script>
+
+</body>
+</html>
