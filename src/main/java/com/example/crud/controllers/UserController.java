@@ -28,7 +28,7 @@ public class UserController {
     
 
     @GetMapping("/users")
-    public ResponseEntity<?> getAllUsers(@RequestParam(required = false) Long id) {
+    public ResponseEntity<?> getAllUsers(@RequestParam(required = false) String id) {
         if (id != null) {
             return ResponseEntity.ok(userRepository.findById(id).get());
         }
@@ -53,7 +53,7 @@ public class UserController {
     }
 
     @DeleteMapping("/users/{id}")
-    public ResponseEntity<?> deleteUser(@PathVariable Long id) {
+    public ResponseEntity<?> deleteUser(@PathVariable String id) {
         userRepository.deleteById(id);
         return ResponseEntity.ok("User deleted with id: " + id);
     }
